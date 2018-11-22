@@ -1,5 +1,41 @@
 import socket               # Import socket module
 import os
+import json
+
+"""
+mensaje cliente a servidor
+{
+	"action" : [1,2,3]
+	"keyword": /*nombre del archivo*/
+}
+
+respuesta postiva del server
+{
+	"response" : True
+	"Files" : [ { /* Hash* /:
+			{	"name": /*nombre del archivo*/
+				"size" : float
+				"peers" : int
+			}
+		}
+	]
+}
+
+respuesta negativa del server
+
+{
+	"response" : False
+	"error" : "sapo qlo busca una wea que exista"
+}
+
+si la repsuesta es afirmativa, 
+el cliente selecciona las wea que quiere bajar, 
+y el server le da los ip.
+
+"""
+
+
+
 # http://cs.berry.edu/~nhamid/p2p/framework-python.html
 #Ignore
 def cls():
@@ -28,7 +64,8 @@ def Menu(s): # s: Socket
 		file = input("File: ")
 		msg = "Search " + file
 		s.send(msg.encode())
-		print(s.recv(1024).decode())
+		print(s.recv(1024).decode()) #Json
+		print("Print clients with that file")
 	elif des == "2":
 		file = input("File: ")
 		msg = "Download " + file
@@ -50,7 +87,26 @@ def Menu(s): # s: Socket
 		Send_File(file, s)
 	else:
 		s.send("bye...".encode())
+		s.close()
+		exit()
+	return None
+
+def Update_Files(s, host):
+	files = os.listdir()
+	data = {}
+	data[host] = []
+	for i in files:
+		data[host].append(i)
+	json_data = json.dumps(data).encode()
+	# Send this updated information to server
+	s.send(json_data)
+	"""
+	try:
+		s.sendall(json_data)
+	except Exception as e:
+		print("Error in updating file info")
 		return 1
+	"""
 	return None
 
 if __name__ == "__main__":
@@ -64,9 +120,8 @@ if __name__ == "__main__":
 		exit()
 	print("Welcome " + str(host) + "!")
 	print(s.recv(1024).decode())
+	Update_Files(s, host)
 	while True:
 		Menu(s)
-		if Menu(s) == 1:
-			break
 
 	s.close()                  # Close the socket when done

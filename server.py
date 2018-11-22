@@ -12,6 +12,7 @@ while True:
     print('Got connection from', addr)
     c.send('[Server] Thank you for connecting'.encode())
     msg = c.recv(1024).decode()
+    print(msg)
     if "Download " in msg:
     	c.send("[Server] Sending".encode())
     	f = open(msg[9:], 'rb')
@@ -29,7 +30,7 @@ while True:
     	try:
     		temp = open(msg_list[1], 'rb')
     	except Exception as e:
-    		c.send("[Server] File not in network")
+    		c.send("[Server] File not in network".encode())
     		continue
     	c.send("[Server] Print clients".encode())
     c.close()  # Close the connection
