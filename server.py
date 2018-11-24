@@ -14,24 +14,23 @@ while True:
     msg = c.recv(1024).decode()
     print(msg)
     if "Download " in msg:
-    	c.send("[Server] Sending".encode())
-    	f = open(msg[9:], 'rb')
-    	l = f.read(1024)
-    	while l:
-    		print("Sending...")
-    		print(l)
-    		c.send(l)
-    		l = f.read(1024)
-    	f.close()
-    	print("Sent!")
-    	c.send("[Server] Done".encode())
+        c.send("[Server] Sending".encode())
+        f = open(msg[9:], 'rb')
+        l = f.read(1024)
+        while l:
+            print("Sending...")
+            print(l)
+            c.send(l)
+            l = f.read(1024)
+        f.close()
+        print("Sent!")
+        c.send("[Server] Done".encode())
     if "Search " in msg:
-    	msg_list = msg.split()
-    	try:
-    		temp = open(msg_list[1], 'rb')
-    	except Exception as e:
-    		c.send("[Server] File not in network".encode())
-    		continue
-    	c.send("[Server] Print clients".encode())
+        msg_list = msg.split()
+        try:
+            temp = open(msg_list[1], 'rb')
+        except Exception as e:
+            c.send("[Server] File not in network".encode())
+            continue
+        c.send("[Server] Print clients".encode())
     c.close()  # Close the connection
-
