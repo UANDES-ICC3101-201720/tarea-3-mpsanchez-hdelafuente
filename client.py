@@ -5,7 +5,7 @@ import json
 """
 mensaje cliente a servidor
 {
-	"action" : [1,2,3]
+	"action" : [1,2,3],
 	"keyword": /*nombre del archivo*/
 }
 
@@ -34,10 +34,8 @@ y el server le da los ip.
 
 """
 
-
-
 # http://cs.berry.edu/~nhamid/p2p/framework-python.html
-#Ignore
+# Ignore
 def cls():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -53,40 +51,41 @@ def Send_File(file_name, s): # This function sends a file to the socket
 	print(s.recv(1024).decode()) # Server response
 	return None
 
-def Recive_File(file_name, s):
+def Recive_File(file, s):
+	f = open(file,'wb')
+	while (True):
+		l = s.recv(1024)
+		while (not " Done" in l.decode()):
+			print("[Client] Recieving...")
+			f.write(l)
+		if " Done" in l.decode():
+			#print("linea 54")
+			break
+	f.close()
 	return None
 
 
 def Menu(s): # s: Socket
+	msg_server = {}
 	print("\t1. Search file\n\t2. Download file\n\t3. Send file\n\t0. Exit")
 	des = input("Option: ")
 	if des == "1":
 		file = input("File: ")
-		msg = "Search " + file
-		s.send(msg.encode())
+		msg_server["action"] = 1
+		msg_server["keyword"] = file
+		s.send(json.dumps(msg_server).encode())
 		print(s.recv(1024).decode()) #Json
-		print("Print clients with that file")
 	elif des == "2":
 		file = input("File: ")
-		msg = "Download " + file
-		s.send(msg.encode())
+		msg_server["action"] = 2
+		msg_server["keyword"] = file
+		s.send(json.dumps(msg_server).encode())
 		print(s.recv(1024).decode())
-		f = open(file,'wb')
-		while (True):
-			l = s.recv(1024)
-			while (not " Done" in l.decode()):
-				print("[Client] Recieving...")
-				f.write(l)
-			if " Done" in l.decode():
-				print("linea 54")
-				break
-			print("aca")
-		f.close()
+		
 	elif des == "3":
 		file = input("File: ")
 		Send_File(file, s)
 	else:
-		s.send("bye...".encode())
 		s.close()
 		exit()
 	return None
@@ -99,14 +98,11 @@ def Update_Files(s, host):
 		data[host].append(i)
 	json_data = json.dumps(data).encode()
 	# Send this updated information to server
-	s.send(json_data)
-	"""
 	try:
-		s.sendall(json_data)
+		s.send(json_data)
 	except Exception as e:
-		print("Error in updating file info")
-		return 1
-	"""
+		print("Error updating file info")
+		print(e)
 	return None
 
 if __name__ == "__main__":
