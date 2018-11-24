@@ -4,7 +4,7 @@ import json
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
 host = socket.gethostname()  # Get local machine name
 port = 12345  # Reserve a port for your service.
-s.bind(("127.0.0.1", port))  # Bind to the port
+s.bind(('', port))  # Bind to the port
 s.listen(5)  # Now wait for client connection.
 
 
@@ -24,9 +24,8 @@ def Send_File(file, c):
 
 
 def Read_Config():
-    config = open("config.json", "r+")
-    json_data = json.loads(config.read())
-    print(json_data)
+    with open("config.json", "r+") as config:
+        json_data = json.loads(json.loads(config.readline()))
     config.close()
     return json_data
 
@@ -44,7 +43,7 @@ while True:
 
     json_config = Read_Config()
     print("json_config:")
-    print(json.dumps(json_config))
+    print(type(json_config))
 
     c.send('[Server] Thank you for connecting'.encode())
     msg = c.recv(1024).decode()

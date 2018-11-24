@@ -111,11 +111,11 @@ def Update_Files(s, host):
 
 
 if __name__ == "__main__":
-    s = socket.socket()  # Create a socket object
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
     host = socket.gethostname()  # Get local machine name
     port = 12345  # Reserve a port for your service.
     try:
-        s.connect((host, port))
+        s.connect(("127.0.0.1", port))
     except Exception as e:
         print("Connection refused\nExiting...")
         exit()
