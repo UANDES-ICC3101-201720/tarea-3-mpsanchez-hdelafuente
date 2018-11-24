@@ -30,9 +30,16 @@ def Read_Config():
     return json_data
 
 
-def Update_Config(msg):
-    config = open("config.json", "r+")
-    json.dump(msg, config)
+def Update_Config(msg, ip):
+    # msg seria el archivo de texto con todos los archivos que contiene la carpeta del cliente que realiza un update
+    with open("config.json", "r+") as config:
+        json_data = json.loads(json.loads(config.readline()))
+        msg_data = json.loads(json.loads(msg))
+        for file in msg_data:
+            for value in msg_data[file]:
+                if value not in json_data.key_values():
+                    json_data[value] = []
+                json_data[value].append(ip)
     config.close()
     return None
 
