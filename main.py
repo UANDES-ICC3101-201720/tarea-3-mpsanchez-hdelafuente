@@ -1,5 +1,7 @@
 import _thread
 import time
+import server
+import client
 
 
 # Define a function for the thread
