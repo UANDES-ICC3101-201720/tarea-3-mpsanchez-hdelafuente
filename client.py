@@ -67,14 +67,14 @@ def Menu(s): # s: Socket
 		msg_to_server["action"] = 1
 		msg_to_server["keyword"] = file
 		s.send(json.dumps(msg_to_server).encode())
+		print(s.recv(1024).decode())
 	elif des == "2":
 		file = input("File: ")
 		msg_to_server["action"] = 2
 		msg_to_server["keyword"] = file
-		s.send(json.dumps(msg_to_server).encode())	
+		s.send(json.dumps(msg_to_server).encode())
 	elif des == "3":
 		file = input("File: ")
-		Send_File(file, s)
 	else:
 		s.send("Exit".encode())
 		s.close()
