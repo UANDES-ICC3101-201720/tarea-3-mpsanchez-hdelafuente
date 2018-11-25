@@ -30,7 +30,7 @@ def Read_Config():
 
 def Update_Config(msg, ip):
     # msg seria el archivo de texto con todos los archivos que contiene la carpeta del cliente que realiza un update
-    with open("config.json", "w") as config:
+    with open("config.json", "r+") as config:
         try:
             json_data = json.loads(config.readline())
         except Exception as e:
@@ -115,7 +115,7 @@ def client_thread(c, ip):
     			search = Search_File(client_msg["keyword"], config)
     			c.send(json.dumps(search).encode())
     		elif client_msg["action"] == 2:
-    			print("action 2")
+    			print(config[client_msg["keyword"]])
     		elif client_msg["action"] == 3:
     			print("action 3")
     		else:

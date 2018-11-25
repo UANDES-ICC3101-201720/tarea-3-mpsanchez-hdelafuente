@@ -1,6 +1,7 @@
 import socket               # Import socket module
 import os
 import json
+import threading
 
 """
 mensaje cliente a servidor
@@ -60,21 +61,20 @@ def Recive_File(file, s):
 
 def Menu(s): # s: Socket
 	msg_to_server = {}
-	print("\t1. Search file\n\t2. Download file\n\t3. Send file\n\t0. Exit")
+	print("\t1. Search file\n\t0. Exit")
 	des = input("Option: ")
 	if des == "1":
 		file = input("File: ")
 		msg_to_server["action"] = 1
 		msg_to_server["keyword"] = file
 		s.send(json.dumps(msg_to_server).encode())
-		print(s.recv(1024).decode())
-	elif des == "2":
-		file = input("File: ")
-		msg_to_server["action"] = 2
-		msg_to_server["keyword"] = file
-		s.send(json.dumps(msg_to_server).encode())
-	elif des == "3":
-		file = input("File: ")
+		search = json.loads(s.recv(1024).decode())
+		print(search)
+		to_download = input("Wich one: ")
+		try:
+			Thread(target = P2P_Recv, args = (to_download, search[to_download][0])).start()
+		except Exception as e:
+			print("Error en recv")
 	else:
 		s.send("Exit".encode())
 		s.close()
@@ -96,6 +96,13 @@ def Update_Files(s, host):
 		print("Error updating file info")
 		print(e)
 		s.close()
+
+	try:
+		Thread(target = P2P_Send, args = ()).start()
+	except Exception as e:
+		print("Error en send")
+
+
 	return None
 
 def P2P_Recv(file_name, host):
@@ -110,12 +117,16 @@ def P2P_Recv(file_name, host):
 	s.close()
 	return None
 
-def P2P_Send(file_name):
+def P2P_Send():
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	port = 12345
 	s.bind(('', port))
-	s.send("Starting".encode())
-	Send_File(file_name, s)
+	s.listen(5)
+	while True:
+		c, addr = s.accept()
+		file_name = s.recv(1024).decode()
+		s.send("Starting".encode())
+		Send_File(file_name, s)
 
 	s.close()
 	return None
@@ -126,7 +137,7 @@ if __name__ == "__main__":
 	host = socket.gethostname() # Get local machine name
 	port = 12345               # Reserve a port for your service.
 	try:
-		s.connect(("127.0.0.1", port))
+		s.connect(("192.168.0.27", port))
 	except Exception as e:
 		print("Connection refused\nExiting...")
 		exit()
