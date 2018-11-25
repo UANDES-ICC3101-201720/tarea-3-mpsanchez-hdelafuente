@@ -39,10 +39,6 @@ def start_server():
             traceback.print_exc()
 
         c.close()
-        # Desrialize json using:
-        # 1: Search file
-        # 2: Download file
-
     s.close()
 
 
