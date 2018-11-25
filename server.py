@@ -42,7 +42,9 @@ def Update_Config(msg, ip):
                     json_data[value] = []
                 if ip not in json_data[value]:
                     json_data[value].append(ip)
-        json.dump(json_data, config)
+        config.close()
+    config = open("config.json", "w")
+    json.dump(json_data, config)    
     config.close()
     return None
 
@@ -92,35 +94,35 @@ def start_server():
 
 def client_thread(c, ip):
     while True:
-    	try:
-    		c.send('[Server] Thank you for connecting'.encode())
-    	except:
-    		print("Error xD")
-    		break
-    	update_msg = c.recv(1024).decode()
-    	print("client: " + update_msg)
-    	if "Update" in update_msg:
-    		Update_Config(c.recv(1024).decode(), ip)
-    	exit = False
-    	while not exit:
-    		config = Read_Config()
-    		client_msg = c.recv(1024).decode()
-    		if "Exit" in client_msg:
-    			print("Ok")
-    			exit = True
-    			c.close()
-    			break
-    		client_msg = json.loads(client_msg)
-    		if client_msg["action"] == 1:
-    			search = Search_File(client_msg["keyword"], config)
-    			c.send(json.dumps(search).encode())
-    		elif client_msg["action"] == 2:
-    			print(config[client_msg["keyword"]])
-    		elif client_msg["action"] == 3:
-    			print("action 3")
-    		else:
-    			print("Unkown option")
-    			continue
+        try:
+            c.send('[Server] Thank you for connecting'.encode())
+        except:
+            print("Error xD")
+            break
+        update_msg = c.recv(1024).decode()
+        print("client: " + update_msg)
+        if "Update" in update_msg:
+            Update_Config(c.recv(1024).decode(), ip)
+        exit = False
+        while not exit:
+            config = Read_Config()
+            client_msg = c.recv(1024).decode()
+            if "Exit" in client_msg:
+                print("Ok")
+                exit = True
+                c.close()
+                break
+            client_msg = json.loads(client_msg)
+            if client_msg["action"] == 1:
+                search = Search_File(client_msg["keyword"], config)
+                c.send(json.dumps(search).encode())
+            elif client_msg["action"] == 2:
+                print(config[client_msg["keyword"]])
+            elif client_msg["action"] == 3:
+                print("action 3")
+            else:
+                print("Unkown option")
+                continue
     c.close()
 
 
