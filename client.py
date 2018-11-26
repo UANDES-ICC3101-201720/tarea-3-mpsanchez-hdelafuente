@@ -1,7 +1,7 @@
 import socket               # Import socket module
 import os
 import json
-import threading
+from threading import Thread
 
 """
 mensaje cliente a servidor
@@ -35,11 +35,6 @@ y el server le da los ip.
 
 """
 
-# http://cs.berry.edu/~nhamid/p2p/framework-python.html
-# Ignore
-def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
 def Send_File(file_name, s): # This function sends a file to the socket
 	f = open(file_name, 'rb')
 	l = f.read(1024)
@@ -61,7 +56,7 @@ def Recive_File(file, s):
 
 def Menu(s): # s: Socket
 	msg_to_server = {}
-	print("\t1. Search file\n\t0. Exit")
+	print("\t1. Search file\n\t2. Update files\n\t0. Exit")
 	des = input("Option: ")
 	if des == "1":
 		file = input("File: ")
@@ -71,10 +66,24 @@ def Menu(s): # s: Socket
 		search = json.loads(s.recv(1024).decode())
 		print(search)
 		to_download = input("Wich one: ")
+		cnt = 0
+		if search[to_download][cnt] == "192.168.0.130":
+			cnt += 1
 		try:
-			Thread(target = P2P_Recv, args = (to_download, search[to_download][0])).start()
+			Thread(target = P2P_Recv, args = (to_download, search[to_download][cnt])).start()
 		except Exception as e:
 			print("Error en recv")
+			print(e)
+	elif des == "2":
+		msg_to_server["action"] = 2
+		s.send(json.dumps(msg_to_server).encode())
+		files = os.listdir()
+		data = {}
+		data[host] = []
+		for i in files:
+			data[host].append(i)
+		json_data = json.dumps(data)
+		s.send(json_data.encode())
 	else:
 		s.send("Exit".encode())
 		s.close()
@@ -101,6 +110,7 @@ def Update_Files(s, host):
 		Thread(target = P2P_Send, args = ()).start()
 	except Exception as e:
 		print("Error en send")
+		print(e)
 
 
 	return None
@@ -137,7 +147,7 @@ if __name__ == "__main__":
 	host = socket.gethostname() # Get local machine name
 	port = 12345               # Reserve a port for your service.
 	try:
-		s.connect(("192.168.0.27", port))
+		s.connect(("192.168.0.171", port))
 	except Exception as e:
 		print("Connection refused\nExiting...")
 		exit()

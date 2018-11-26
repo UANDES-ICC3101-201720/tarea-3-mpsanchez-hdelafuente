@@ -121,8 +121,6 @@ def client_thread(c, ip):
                 c.send(json.dumps(search).encode())
             elif client_msg["action"] == 2:
                 Update_Config(c.recv(1024).decode(), ip)
-            elif client_msg["action"] == 3:
-                print("action 3")
             else:
                 print("Unkown option")
                 continue
