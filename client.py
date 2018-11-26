@@ -127,7 +127,9 @@ def P2P_Recv(file_name, host):
 	s.close()
 	return None
 
-def P2P_Send(file_name):
+def P2P_Send(file_name = None):
+	if file_name == None:
+		return None
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	port = 8888
 	s.bind(('', port))
