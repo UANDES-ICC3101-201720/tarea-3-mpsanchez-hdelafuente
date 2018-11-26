@@ -90,7 +90,7 @@ def Menu(s): # s: Socket
 		exit()
 	return None
 
-def Update_Files(s, host):
+def Update_Files(s, host, file_name = None):
 	files = os.listdir()
 	data = {}
 	data[host] = []
@@ -107,7 +107,7 @@ def Update_Files(s, host):
 		s.close()
 
 	try:
-		Thread(target = P2P_Send, args = ()).start()
+		Thread(target = P2P_Send, args = (file_name)).start()
 	except Exception as e:
 		print("Error en send")
 		print(e)
@@ -117,7 +117,7 @@ def Update_Files(s, host):
 
 def P2P_Recv(file_name, host):
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	port = 12345
+	port = 8888
 	s.connect((host, port))
 	msg = s.recv(1024).decode()
 	if "Starting" in msg:
@@ -127,14 +127,13 @@ def P2P_Recv(file_name, host):
 	s.close()
 	return None
 
-def P2P_Send():
+def P2P_Send(file_name):
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	port = 12345
+	port = 8888
 	s.bind(('', port))
 	s.listen(5)
 	while True:
 		c, addr = s.accept()
-		file_name = s.recv(1024).decode()
 		s.send("Starting".encode())
 		Send_File(file_name, s)
 
