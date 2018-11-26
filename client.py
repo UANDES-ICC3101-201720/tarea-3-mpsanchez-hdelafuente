@@ -120,11 +120,7 @@ def P2P_Recv(file_name, host):
 	port = 8888
 	s.connect((host, port))
 	s.send(file_name.encode())
-	msg = s.recv(1024).decode()
-	if "Starting" in msg:
-		Recive_File(file_name, s)
-
-	
+	Recive_File(file_name, s)
 	s.close()
 	return None
 
@@ -136,10 +132,9 @@ def P2P_Send():
 	while True:
 		c, addr = s.accept()
 		file_name = c.recv(1024).decode()
-		s.send("Starting".encode())
 		Send_File(file_name, s)
 
-	s.close()
+	c.close()
 	return None
 
 
@@ -148,7 +143,7 @@ if __name__ == "__main__":
 	host = socket.gethostname() # Get local machine name
 	port = 12345               # Reserve a port for your service.
 	try:
-		s.connect(("192.168.0.171", port))
+		s.connect(("172.20.10.10", port))
 	except Exception as e:
 		print("Connection refused\nExiting...")
 		exit()
