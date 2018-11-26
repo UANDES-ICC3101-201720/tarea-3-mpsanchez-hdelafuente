@@ -49,7 +49,8 @@ def Send_File(): # This function sends a file to the socket
 			c.send(l)
 			l = f.read(1024)
 		f.close()
-		s.send("Done".encode())
+		c.send("Done".encode())
+		break
 	c.close()
 	return None
 
@@ -57,11 +58,12 @@ def Recive_File(file, ip):
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	port = 8888
 	s.connect((ip, port))
-	s.send(file_name.encode())
+	s.send(file.encode())
 	f = open(file,'wb')
 	l = s.recv(1024)
 	while (not "Done" in l.decode()):
 		f.write(l)
+		l = s.recv(1024)
 	f.close()
 	s.close()
 	return None
