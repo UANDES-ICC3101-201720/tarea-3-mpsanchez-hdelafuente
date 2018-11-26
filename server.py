@@ -117,9 +117,7 @@ def client_thread(c, ip):
                 search = Search_File(client_msg["keyword"], config)
                 c.send(json.dumps(search).encode())
             elif client_msg["action"] == 2:
-                print(config[client_msg["keyword"]])
-            elif client_msg["action"] == 3:
-                print("action 3")
+                Update_Config(c.recv(1024).decode(), ip)
             else:
                 print("Unkown option")
                 continue
