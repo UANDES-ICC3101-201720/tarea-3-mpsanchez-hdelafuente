@@ -35,22 +35,35 @@ y el server le da los ip.
 
 """
 
-def Send_File(file_name, s): # This function sends a file to the socket
-	f = open(file_name, 'rb')
-	l = f.read(1024)
-	while l:
-		s.send(l)
+def Send_File(): # This function sends a file to the socket
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	port = 8888
+	s.bind(('', port))
+	s.listen(5)
+	while True:
+		c, addr = s.accept()
+		file_name = c.recv(1024).decode()
+		f = open(file_name, 'rb')
 		l = f.read(1024)
-	f.close()
-	s.send("Done".encode())
+		while l:
+			c.send(l)
+			l = f.read(1024)
+		f.close()
+		s.send("Done".encode())
+	c.close()
 	return None
 
-def Recive_File(file, s):
+def Recive_File(file, ip):
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	port = 8888
+	s.connect((ip, port))
+	s.send(file_name.encode())
 	f = open(file,'wb')
 	l = s.recv(1024)
 	while (not "Done" in l.decode()):
 		f.write(l)
 	f.close()
+	s.close()
 	return None
 
 
@@ -70,7 +83,7 @@ def Menu(s): # s: Socket
 		if search[to_download][cnt] == "192.168.0.130":
 			cnt += 1
 		try:
-			Thread(target = P2P_Recv, args = (to_download, search[to_download][cnt])).start()
+			Thread(target = Recive_File, args = (to_download, search[to_download][cnt])).start()
 		except Exception as e:
 			print("Error en recv")
 			print(e)
@@ -107,36 +120,13 @@ def Update_Files(s, host):
 		s.close()
 
 	try:
-		Thread(target = P2P_Send, args = ()).start()
+		Thread(target = Send_File, args = ()).start()
 	except Exception as e:
 		print("Error en send")
 		print(e)
 
 
 	return None
-
-def P2P_Recv(file_name, host):
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	port = 8888
-	s.connect((host, port))
-	s.send(file_name.encode())
-	Recive_File(file_name, s)
-	s.close()
-	return None
-
-def P2P_Send():
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	port = 8888
-	s.bind(('', port))
-	s.listen(5)
-	while True:
-		c, addr = s.accept()
-		file_name = c.recv(1024).decode()
-		Send_File(file_name, s)
-
-	c.close()
-	return None
-
 
 if __name__ == "__main__":
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         # Create a socket object
