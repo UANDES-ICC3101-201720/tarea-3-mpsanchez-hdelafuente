@@ -44,7 +44,7 @@ def Update_Config(msg, ip):
                     json_data[value].append(ip)
         config.close()
     config = open("config.json", "w")
-    json.dump(json_data, config)    
+    json.dump(json_data, config)
     config.close()
     return None
 
@@ -65,6 +65,9 @@ def start_server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
     host = socket.gethostname()  # Get local machine name
     port = 12345  # Reserve a port for your service.
+
+    config = open("config.json", "w")
+    config.close()
 
     print("socket created")
 
