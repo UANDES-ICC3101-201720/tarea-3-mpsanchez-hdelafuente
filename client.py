@@ -56,7 +56,7 @@ def Recive_File(file, s):
 
 def Menu(s): # s: Socket
 	msg_to_server = {}
-	print("\t1. Search file\n\t0. Exit")
+	print("\t1. Search file\n\t2. Update files\n\t0. Exit")
 	des = input("Option: ")
 	if des == "1":
 		file = input("File: ")
@@ -66,11 +66,16 @@ def Menu(s): # s: Socket
 		search = json.loads(s.recv(1024).decode())
 		print(search)
 		to_download = input("Wich one: ")
+		cnt = 0
+		if search[to_download][cnt] == "192.168.0.130":
+			cnt += 1
 		try:
-			Thread(target = P2P_Recv, args = (to_download, search[to_download][0])).start()
+			Thread(target = P2P_Recv, args = (to_download, search[to_download][cnt])).start()
 		except Exception as e:
 			print("Error en recv")
 			print(e)
+	elif des == "2":
+		Update_Files(s, "192.168.0.130")
 	else:
 		s.send("Exit".encode())
 		s.close()
