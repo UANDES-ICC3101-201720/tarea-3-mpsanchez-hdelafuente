@@ -75,7 +75,15 @@ def Menu(s): # s: Socket
 			print("Error en recv")
 			print(e)
 	elif des == "2":
-		Update_Files(s, "192.168.0.130")
+		msg_to_server["action"] = 2
+		s.send(json.dumps(msg_to_server).encode())
+		files = os.listdir()
+		data = {}
+		data[host] = []
+		for i in files:
+			data[host].append(i)
+		json_data = json.dumps(data)
+		s.send(json_data.encode())
 	else:
 		s.send("Exit".encode())
 		s.close()
