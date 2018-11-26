@@ -1,7 +1,7 @@
 import socket               # Import socket module
 import os
 import json
-import threading
+from threading import Thread
 
 """
 mensaje cliente a servidor
@@ -34,11 +34,6 @@ el cliente selecciona las wea que quiere bajar,
 y el server le da los ip.
 
 """
-
-# http://cs.berry.edu/~nhamid/p2p/framework-python.html
-# Ignore
-def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 def Send_File(file_name, s): # This function sends a file to the socket
 	f = open(file_name, 'rb')
@@ -75,6 +70,7 @@ def Menu(s): # s: Socket
 			Thread(target = P2P_Recv, args = (to_download, search[to_download][0])).start()
 		except Exception as e:
 			print("Error en recv")
+			print(e)
 	else:
 		s.send("Exit".encode())
 		s.close()
@@ -101,6 +97,7 @@ def Update_Files(s, host):
 		Thread(target = P2P_Send, args = ()).start()
 	except Exception as e:
 		print("Error en send")
+		print(e)
 
 
 	return None
@@ -137,7 +134,7 @@ if __name__ == "__main__":
 	host = socket.gethostname() # Get local machine name
 	port = 12345               # Reserve a port for your service.
 	try:
-		s.connect(("192.168.0.27", port))
+		s.connect(("192.168.0.171", port))
 	except Exception as e:
 		print("Connection refused\nExiting...")
 		exit()
